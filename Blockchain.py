@@ -7,11 +7,20 @@ genesis_block = {
 blockchain = [genesis_block]
 open_transactions = []
 owner = 'Ashish'
-participants = {'Salman Khan'}
+participants = {'Ashish'}
 
 
 def hash_block(block):
-    return '-'.join([str(block[key]) for key in block])  #temporary hash 
+    return '-'.join([str(block[key]) for key in block])  # temporary hash
+
+
+def get_balance(participant):
+    tx_sender = [[tx['amount'] for tx in block['transactions'] if tx['sender'] == participant] for block in blockchain]
+    amount_sent = 0
+    for tx in tx_sender:
+        if len(tx) > 0:
+            amount_sent += tx[0]
+    return amount_sent
 
 
 def get_last_blockchain_value():
@@ -21,7 +30,7 @@ def get_last_blockchain_value():
     return blockchain[-1]
 
 
-def add_transaction(recipient, sender=owner, amount=1.0):
+def add_transaction(recipient, sender=owner, amounts=1.0):
     """ Append a new value as well as the last blockchain value to the blockchain.
 
     Arguments:
@@ -32,7 +41,7 @@ def add_transaction(recipient, sender=owner, amount=1.0):
     transaction = {
         'sender': sender,
         'recipient': recipient,
-        'amount': amount
+        'amount': amounts
     }
     open_transactions.append(transaction)
     participants.add(sender)
@@ -48,6 +57,7 @@ def mine_block():
         'transactions': open_transactions
     }
     blockchain.append(block)
+    return True
 
 
 def get_transaction_value():
@@ -99,12 +109,13 @@ while waiting_for_input:
     user_choice = get_user_choice()
     if user_choice == '1':
         tx_data = get_transaction_value()
-        recipient, amount = tx_data
+        recipients, amount = tx_data
         # Add the transaction amount to the blockchain
-        add_transaction(recipient, amount=amount)
+        add_transaction(recipients, amounts=amount)
         print(open_transactions)
     elif user_choice == '2':
-        mine_block()
+        if mine_block():
+            open_transactions = []
     elif user_choice == '3':
         print_blockchain_elements()
     elif user_choice == '4':
@@ -127,8 +138,8 @@ while waiting_for_input:
         print('Invalid blockchain!')
         # Break out of the loop
         break
+    print(get_balance('Ashish'))
 else:
     print('User left!')
-
 
 print('Done!')
