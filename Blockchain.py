@@ -1,5 +1,5 @@
-# Initializing our (empty) blockchain list
-MINING_REWARD = 10
+# Initializing our (empty) blockchain list       
+MINING_REWARD = 10    
 
 genesis_block = {
     'previous_hash': '',
@@ -8,7 +8,7 @@ genesis_block = {
 }
 blockchain = [genesis_block]
 open_transactions = []
-owner = 'Ashish'
+owner = "Ashish"
 participants = {'Ashish'}
 
 
@@ -43,9 +43,6 @@ def verify_transaction(transaction):
     sender_balance = get_balance(transaction['sender'])
     return sender_balance >= transaction['amount']
 
-# This function accepts two arguments.
-# One required one (transaction_amount) and one optional one (last_transaction)
-# The optional one is optional because it has a default value => [1]
 
 
 def add_transaction(recipient, sender=owner, amount=1.0):
