@@ -1,3 +1,4 @@
+import functools
 # Initializing our (empty) blockchain list       
 MINING_REWARD = 10    
 
@@ -20,15 +21,17 @@ def get_balance(participant):
     tx_sender = [[tx['amount'] for tx in block['transactions'] if tx['sender'] == participant] for block in blockchain]
     open_tx_sender = [tx['amount'] for tx in open_transactions if tx['sender'] == participant]
     tx_sender.append(open_tx_sender)
+
+    amount_sent = functools.reduce(lambda tx_sum,tx_amt: tx_sum + sum(tx_amt) if len(tx_amt)>0 else tx_sum + 0 ,tx_sender,0)
+    
     amount_sent = 0
     for tx in tx_sender:
         if len(tx) > 0:
             amount_sent += tx[0]
     tx_recipient = [[tx['amount'] for tx in block['transactions'] if tx['recipient'] == participant] for block in blockchain]
-    amount_received = 0
-    for tx in tx_recipient:
-        if len(tx) > 0:
-            amount_received += tx[0]
+    
+    amount_received = functools.reduce(lambda tx_sum,tx_amt: tx_sum + sum(tx_amt) if len(tx_amt)>0 else tx_sum + 0 ,tx_recipient,0)
+    
     return amount_received - amount_sent
 
 
@@ -134,6 +137,7 @@ while waiting_for_input:
     print('3: Output the blockchain blocks')
     print('4: Output participants')
     print('5: Check transaction validity')
+    print('6: Check Balance of participants')
     print('h: Manipulate the chain')
     print('q: Quit')
     user_choice = get_user_choice()
@@ -158,13 +162,19 @@ while waiting_for_input:
             print('All transactions are valid')
         else:
             print('There are invalid transactions')
+    elif user_choice == '6':
+        user_balance = input('Enter name of participant to get the balance detail: ')
+        if user_balance in participants:
+            print('Balance of {} : {:6.2f}'.format(user_balance, get_balance(user_balance)))
+        else:
+            print('User is invalid')
     elif user_choice == 'h':
-        # Make sure that you don't try to "hack" the blockchain if it's empty
+        # Make sure that you don't t ry to "hack" the blockchain if it's empty
         if len(blockchain) >= 1:
             blockchain[0] = {
                 'previous_hash': '',
                 'index': 0,
-                'transactions': [{'sender': 'Chris', 'recipient': 'Max', 'amount': 100.0}]
+                'transactions': [{'sender': 'Hacker', 'recipient': 'Anonymous', 'amount': 999999999999.0}]
             }
     elif user_choice == 'q':
         # This will lead to the loop to exist because it's running condition becomes False
@@ -176,8 +186,9 @@ while waiting_for_input:
         print('Invalid blockchain!')
         # Break out of the loop
         break
-    print(get_balance('Ashish'))
+   
 else:
     print('User left!')
 
 print('Done!')
+
